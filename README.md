@@ -1,4 +1,4 @@
-# Flask JWT AUTH
+# Flask JWT Auth
 
 ## Quick Start
 
