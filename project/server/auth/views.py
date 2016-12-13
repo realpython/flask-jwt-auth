@@ -20,7 +20,8 @@ def register():
     user = User.query.filter_by(email=post_data.get('email')).first()
     if not user:
         user = User(
-            email=post_data.get('email'),                password=post_data.get('password')
+            email=post_data.get('email'),
+            password=post_data.get('password')
         )
         # insert the user
         db.session.add(user)
