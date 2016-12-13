@@ -18,8 +18,6 @@ class TestDevelopmentConfig(TestCase):
     def test_app_is_development(self):
         self.assertFalse(current_app.config['TESTING'])
         self.assertTrue(app.config['DEBUG'] is True)
-        self.assertTrue(app.config['WTF_CSRF_ENABLED'] is False)
-        self.assertTrue(app.config['DEBUG_TB_ENABLED'] is True)
         self.assertFalse(current_app is None)
 
 
@@ -33,7 +31,6 @@ class TestTestingConfig(TestCase):
         self.assertTrue(current_app.config['TESTING'])
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertTrue(app.config['BCRYPT_LOG_ROUNDS'] == 4)
-        self.assertTrue(app.config['WTF_CSRF_ENABLED'] is False)
 
 
 class TestProductionConfig(TestCase):
@@ -45,8 +42,6 @@ class TestProductionConfig(TestCase):
     def test_app_is_production(self):
         self.assertFalse(current_app.config['TESTING'])
         self.assertTrue(app.config['DEBUG'] is False)
-        self.assertTrue(app.config['DEBUG_TB_ENABLED'] is False)
-        self.assertTrue(app.config['WTF_CSRF_ENABLED'] is True)
         self.assertTrue(app.config['BCRYPT_LOG_ROUNDS'] == 13)
 
 

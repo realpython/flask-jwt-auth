@@ -71,18 +71,5 @@ def drop_db():
     db.drop_all()
 
 
-@manager.command
-def create_admin():
-    """Creates the admin user."""
-    db.session.add(User(email='ad@min.com', password='admin', admin=True))
-    db.session.commit()
-
-
-@manager.command
-def create_data():
-    """Creates sample data."""
-    pass
-
-
 if __name__ == '__main__':
     manager.run()
