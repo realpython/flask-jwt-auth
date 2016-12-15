@@ -8,6 +8,7 @@ from project.server.models import User
 
 
 class BaseTestCase(TestCase):
+    """ Base Tests """
 
     def create_app(self):
         app.config.from_object('project.server.config.TestingConfig')
