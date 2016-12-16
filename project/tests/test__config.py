@@ -10,7 +10,6 @@ from project.server import app
 
 
 class TestDevelopmentConfig(TestCase):
-
     def create_app(self):
         app.config.from_object('project.server.config.DevelopmentConfig')
         return app
@@ -22,19 +21,17 @@ class TestDevelopmentConfig(TestCase):
 
 
 class TestTestingConfig(TestCase):
-
     def create_app(self):
         app.config.from_object('project.server.config.TestingConfig')
         return app
 
     def test_app_is_testing(self):
         self.assertTrue(current_app.config['TESTING'])
-        self.assertTrue(app.config['DEBUG'] is True)
+        self.assertTrue(app.config['DEBUG'])
         self.assertTrue(app.config['BCRYPT_LOG_ROUNDS'] == 4)
 
 
 class TestProductionConfig(TestCase):
-
     def create_app(self):
         app.config.from_object('project.server.config.ProductionConfig')
         return app

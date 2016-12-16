@@ -4,12 +4,13 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class BaseConfig(object):
+class BaseConfig:
     """Base configuration."""
     SECRET_KEY = 'my_precious'
     DEBUG = False
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = 'my_secret_key'
 
 
 class DevelopmentConfig(BaseConfig):
