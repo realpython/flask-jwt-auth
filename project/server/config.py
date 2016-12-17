@@ -16,6 +16,7 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""
     DEBUG = True
+    TESTING = False
     BCRYPT_LOG_ROUNDS = 4
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'
 

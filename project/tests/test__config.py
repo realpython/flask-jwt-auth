@@ -15,7 +15,7 @@ class TestDevelopmentConfig(TestCase):
         return app
 
     def test_app_is_development(self):
-        self.assertFalse(current_app.config['TESTING'])
+        self.assertFalse(current_app.config['TESTING'] is True)
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertFalse(current_app is None)
 
@@ -37,7 +37,7 @@ class TestProductionConfig(TestCase):
         return app
 
     def test_app_is_production(self):
-        self.assertFalse(current_app.config['TESTING'])
+        self.assertFalse(current_app.config['TESTING'] is True)
         self.assertTrue(app.config['DEBUG'] is False)
         self.assertTrue(app.config['BCRYPT_LOG_ROUNDS'] == 13)
 
