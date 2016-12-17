@@ -117,6 +117,7 @@ class TestAuthBlueprint(BaseTestCase):
                 )),
                 content_type='application/json',
             )
+            print(json.loads(resp_register.data.decode()), resp_register.status_code)
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(data_register['message'] == 'Successfully registered.')
@@ -133,6 +134,7 @@ class TestAuthBlueprint(BaseTestCase):
                 )),
                 content_type='application/json'
             )
+            print(json.loads(resp_login.data.decode()), resp_login.status_code)
             data_login = json.loads(resp_login.data.decode())
             self.assertTrue(data_login['status'] == 'success')
             self.assertTrue(data_login['message'] == 'Successfully logged in.')
@@ -164,6 +166,7 @@ class TestAuthBlueprint(BaseTestCase):
                 )),
                 content_type='application/json',
             )
+            print(json.loads(resp_register.data.decode()), resp_register.status_code)
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(data_register['message'] == 'Successfully registered.')
@@ -180,6 +183,7 @@ class TestAuthBlueprint(BaseTestCase):
                 )),
                 content_type='application/json'
             )
+            print(json.loads(resp_login.data.decode()), resp_login.status_code)
             data_login = json.loads(resp_login.data.decode())
             self.assertTrue(data_login['status'] == 'success')
             self.assertTrue(data_login['message'] == 'Successfully logged in.')
