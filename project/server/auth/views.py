@@ -64,9 +64,6 @@ class LoginAPI(MethodView):
         try:
             # fetch the user data
             user = User.query.filter_by(email=post_data.get('email')).first_or_404()
-            # ToDo: Need to comment the below condition, kept due to issues with my local Postgres DB
-            if user.password.startswith(r'\x'):
-                user.password = codecs.decode(bytes(user.password[2:], 'ascii'), 'hex')
             if user and bcrypt.check_password_hash(user.password, post_data.get('password')):
                 auth_token = user.generate_auth_token(user.id, user.email)
                 if auth_token:
@@ -78,16 +75,16 @@ class LoginAPI(MethodView):
                     return make_response(jsonify(responseObject)), 200
             else:
                 responseObject = {
-                    'status': 'false',
+                    'status': 'fail',
                     'message': 'User does not exist.'
                 }
                 return make_response(jsonify(responseObject)), 404
         except Exception as e:
             responseObject = {
-                'status': 'false',
-                'message': 'User does not exist.'
+                'status': 'fail',
+                'message': 'Try again'
             }
-            return make_response(jsonify(responseObject)), 404
+            return make_response(jsonify(responseObject)), 500
 
 
 class LogoutAPI(MethodView):
