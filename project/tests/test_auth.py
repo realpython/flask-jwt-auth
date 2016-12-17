@@ -42,9 +42,9 @@ class TestAuthBlueprint(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'fail')
-            self.assertTrue(data['message'] == 'User does not exist.')
+            self.assertTrue(data['message'] == 'Try again')
             self.assertTrue(response.content_type == 'application/json')
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.status_code, 500)
 
     def test_registered_user_login(self):
         """ Test for login of registered-user login """
