@@ -5,9 +5,18 @@ python:
   - "3.4"
   - "2.7"
 
+service:
+  - postgresql
+
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+  - python manage.py db init
+  - python manage.py db migrate
+  - python manage.py db upgrade
 
 script:
   - python manage.py cov
