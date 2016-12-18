@@ -17,7 +17,7 @@ class DevelopmentConfig(BaseConfig):
     """Development configuration."""
     DEBUG = True
     BCRYPT_LOG_ROUNDS = 4
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:@localhost/flask_jwt_auth'
 
 
 class TestingConfig(BaseConfig):
@@ -25,7 +25,7 @@ class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
     BCRYPT_LOG_ROUNDS = 4
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:@localhost/flask_jwt_auth_testing'
     PRESERVE_CONTEXT_ON_EXCEPTION = False
 
 
@@ -33,4 +33,4 @@ class ProductionConfig(BaseConfig):
     """Production configuration."""
     SECRET_KEY = 'my_precious'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/example'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:@localhost/flask_jwt_auth'
