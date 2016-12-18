@@ -17,9 +17,6 @@ install:
 
 before_script:
   - psql -c 'create database flask_jwt_auth_testing;' -U postgres
-  - python manage.py db init
-  - python manage.py db migrate
-  - python manage.py db upgrade
 
 script:
   - python manage.py cov
