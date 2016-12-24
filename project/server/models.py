@@ -61,9 +61,9 @@ class User(db.Model):
             user = User.query.filter_by(id=payload['user_id'], email=payload['email']).first()
             return user
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please login again.'
+            return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please login again.'
+            return 'Invalid token. Please log in again.'
 
     def is_authenticated(self):
         """ Tells whether user is authenticated or not """

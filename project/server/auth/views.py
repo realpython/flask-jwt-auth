@@ -48,7 +48,7 @@ class RegisterAPI(MethodView):
         else:
             responseObject = {
                 'status': 'fail',
-                'message': 'User already exists. Please Login.',
+                'message': 'User already exists. Please Log in.',
             }
             return make_response(jsonify(responseObject)), 202
 
