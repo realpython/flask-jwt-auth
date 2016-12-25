@@ -94,7 +94,11 @@ class LogoutAPI(MethodView):
 
     def post(self):
         # get auth token
-        auth_token = request.headers.get('Authorization').split(" ")[1]
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
+        else:
+            auth_token = ''
         if auth_token:
             resp = User.validate_auth_token(auth_token)
             if not isinstance(resp, str):
@@ -138,7 +142,11 @@ class UserAPI(MethodView):
 
     def get(self):
         # get the auth token
-        auth_token = request.headers.get('Authorization').split(" ")[1]
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
+        else:
+            auth_token = ''
         if auth_token:
             resp = User.validate_auth_token(auth_token)
             if not isinstance(resp, str):
@@ -159,7 +167,7 @@ class UserAPI(MethodView):
             return make_response(jsonify(responseObject)), 200
         else:
             responseObject = {
-                'status': 'success',
+                'status': 'fail',
                 'message': 'Provide a valid auth token.'
             }
             return make_response(jsonify(responseObject)), 401
