@@ -16,3 +16,6 @@ app.config.from_object(app_settings)
 
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
+
+from project.server.auth.views import auth_blueprint
+app.register_blueprint(auth_blueprint)
