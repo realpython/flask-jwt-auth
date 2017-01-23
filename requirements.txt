@@ -9,6 +9,7 @@ Flask-Migrate==2.0.2
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-Testing==0.6.1
+hypothesis==3.6.1
 itsdangerous==0.24
 Jinja2==2.8
 Mako==1.0.6
