@@ -4,7 +4,7 @@
 from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
-from project.server import bcrypt, db
+from project.server import bcrypt, db, py_version
 from project.server.models import User, BlacklistToken
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -19,7 +19,13 @@ class RegisterAPI(MethodView):
         # get the post data
         post_data = request.get_json()
         # validate post data
-        if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+        if py_version == 3:
+            if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+                is_str = True
+        elif py_version == 2:
+            if isinstance(post_data['email'], unicode) and isinstance(post_data['password'], unicode):
+                is_str = True
+        if is_str:
             if '@' in post_data['email'] and '.' in post_data['email'] and len(post_data['email']) >= 4 and len(
                     post_data['password']) >= 6:
                 # check if user already exists
@@ -68,7 +74,14 @@ class LoginAPI(MethodView):
     def post(self):
         # get the post data
         post_data = request.get_json()
-        if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+        # validate post data
+        if py_version == 3:
+            if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+                is_str = True
+        elif py_version == 2:
+            if isinstance(post_data['email'], unicode) and isinstance(post_data['password'], unicode):
+                is_str = True
+        if is_str:
             if '@' in post_data['email'] and '.' in post_data['email'] and len(post_data['email']) >= 4 and len(
                     post_data['password']) >= 6:
                 try:
