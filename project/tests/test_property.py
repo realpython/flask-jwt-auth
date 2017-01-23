@@ -34,15 +34,16 @@ class PropertyBasedTestAuthBlueprint(BaseTestCase):
             data=json.dumps(data),
             content_type='application/json'
         )
-        data = json.loads(response.data.decode())
         if response.status_code == 202:
-            self.assertTrue(data['status'] == 'fail')
-            self.assertTrue(data['message'] == 'Email or Password format is not correct.')
+            response_data = json.loads(response.data.decode())
+            self.assertTrue(response_data['status'] == 'fail')
+            self.assertTrue(response_data['message'] == 'Email or Password format is not correct.')
             self.assertTrue(response.content_type == 'application/json')
-        if response.status_code == 201:
-            self.assertTrue(data['status'] == 'success')
-            self.assertTrue(data['message'] == 'Successfully registered.')
-            self.assertTrue(data['auth_token'])
+        elif response.status_code == 201:
+            response_data = json.loads(response.data.decode())
+            self.assertTrue(response_data['status'] == 'success')
+            self.assertTrue(response_data['message'] == 'Successfully registered.')
+            self.assertTrue(response_data['auth_token'])
             self.assertTrue(response.content_type == 'application/json')
 
     @given(user_data)
@@ -64,30 +65,30 @@ class PropertyBasedTestAuthBlueprint(BaseTestCase):
                 self.assertTrue(data_register['status'] == 'fail')
                 self.assertTrue(data_register['message'] == 'Email or Password format is not correct.')
                 self.assertTrue(resp_register.content_type == 'application/json')
-            if resp_register.status_code == 201:
+            elif resp_register.status_code == 201:
                 data_register = json.loads(resp_register.data.decode())
                 self.assertTrue(data_register['status'] == 'success')
                 self.assertTrue(data_register['message'] == 'Successfully registered.')
                 self.assertTrue(data_register['auth_token'])
                 self.assertTrue(resp_register.content_type == 'application/json')
 
-            # registered user login
-            response = self.client.post(
-                '/auth/login',
-                data=json.dumps(data),
-                content_type='application/json'
-            )
-            if response.status_code == 202:
-                data = json.loads(response.data.decode())
-                self.assertTrue(data['status'] == 'fail')
-                self.assertTrue(data['message'] == 'Email or Password format is not correct.')
-                self.assertTrue(response.content_type == 'application/json')
-            if response.status_code == 200:
-                data = json.loads(response.data.decode())
-                self.assertTrue(data['status'] == 'success')
-                self.assertTrue(data['message'] == 'Successfully logged in.')
-                self.assertTrue(data['auth_token'])
-                self.assertTrue(response.content_type == 'application/json')
+                # registered user login
+                response = self.client.post(
+                    '/auth/login',
+                    data=json.dumps(data),
+                    content_type='application/json'
+                )
+                if response.status_code == 202:
+                    response_data = json.loads(response.data.decode())
+                    self.assertTrue(response_data['status'] == 'fail')
+                    self.assertTrue(response_data['message'] == 'Email or Password format is not correct.')
+                    self.assertTrue(response.content_type == 'application/json')
+                elif response.status_code == 200:
+                    response_data = json.loads(response.data.decode())
+                    self.assertTrue(response_data['status'] == 'success')
+                    self.assertTrue(response_data['message'] == 'Successfully logged in.')
+                    self.assertTrue(response_data['auth_token'])
+                    self.assertTrue(response.content_type == 'application/json')
 
     @given(user_data)
     def test_user_status(self, data):
@@ -102,7 +103,12 @@ class PropertyBasedTestAuthBlueprint(BaseTestCase):
                 data=json.dumps(data),
                 content_type='application/json'
             )
-            if resp_register.status_code == 201:
+            if resp_register.status_code == 202:
+                data_register = json.loads(resp_register.data.decode())
+                self.assertTrue(data_register['status'] == 'fail')
+                self.assertTrue(data_register['message'] == 'Email or Password format is not correct.')
+                self.assertTrue(resp_register.content_type == 'application/json')
+            elif resp_register.status_code == 201:
                 response = self.client.get(
                     '/auth/status',
                     headers=dict(
@@ -111,11 +117,11 @@ class PropertyBasedTestAuthBlueprint(BaseTestCase):
                         )['auth_token']
                     )
                 )
-                data = json.loads(response.data.decode())
-                self.assertTrue(data['status'] == 'success')
-                self.assertTrue(data['data'] is not None)
-                self.assertTrue(data['data']['email'] == 'joe@gmail.com')
-                self.assertTrue(data['data']['admin'] is 'true' or 'false')
+                response_data = json.loads(response.data.decode())
+                self.assertTrue(response_data['status'] == 'success')
+                self.assertTrue(response_data['data'] is not None)
+                self.assertTrue(response_data['data']['email'] == data['email'])
+                self.assertTrue(response_data['data']['admin'] is 'true' or 'false')
                 self.assertEqual(response.status_code, 200)
 
     @given(user_data)
@@ -165,10 +171,14 @@ class PropertyBasedTestAuthBlueprint(BaseTestCase):
                             )['auth_token']
                         )
                     )
-                    data = json.loads(response.data.decode())
-                    self.assertTrue(data['status'] == 'success')
-                    self.assertTrue(data['message'] == 'Successfully logged out.')
-                    self.assertEqual(response.status_code, 200)
+                    if response.status_code == 401:
+                        response_data = json.loads(response.data.decode())
+                        self.assertTrue(response_data['status'] == 'fail')
+                    elif response.status_code == 200:
+                        response_data = json.loads(response.data.decode())
+                        self.assertTrue(response_data['status'] == 'success')
+                        self.assertTrue(response_data['message'] == 'Successfully logged out.')
+                        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':
