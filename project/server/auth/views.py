@@ -26,7 +26,6 @@ class RegisterAPI(MethodView):
                     email=post_data.get('email'),
                     password=post_data.get('password')
                 )
-
                 # insert the user
                 db.session.add(user)
                 db.session.commit()
@@ -171,7 +170,6 @@ class LogoutAPI(MethodView):
                 'message': 'Provide a valid auth token.'
             }
             return make_response(jsonify(responseObject)), 403
-
 
 # define the API resources
 registration_view = RegisterAPI.as_view('register_api')
