@@ -1,6 +1,7 @@
 language: python
 
 python:
+  - "3.6"
   - "3.5"
   - "3.4"
   - "2.7"
@@ -10,6 +11,7 @@ service:
 
 before_install:
   - export APP_SETTINGS="project.server.config.TestingConfig"
+  - export SECRET_KEY="justatest"
 
 install:
   - pip install -r requirements.txt

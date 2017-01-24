@@ -1,4 +1,4 @@
-# project/server/tests/test_auth.py
+# project/tests/test_auth.py
 
 
 import time
@@ -10,18 +10,33 @@ from project.server.models import User, BlacklistToken
 from project.tests.base import BaseTestCase
 
 
+def register_user(self, email, password):
+    return self.client.post(
+        '/auth/register',
+        data=json.dumps(dict(
+            email=email,
+            password=password
+        )),
+        content_type='application/json',
+    )
+
+def login_user(self, email, password):
+    return self.client.post(
+        '/auth/login',
+        data=json.dumps(dict(
+            email=email,
+            password=password
+        )),
+        content_type='application/json',
+    )
+
+
 class TestAuthBlueprint(BaseTestCase):
+
     def test_registration(self):
         """ Test for user registration """
         with self.client:
-            response = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            response = register_user(self, 'joe@gmail.com', '123456')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'success')
             self.assertTrue(data['message'] == 'Successfully registered.')
@@ -38,14 +53,7 @@ class TestAuthBlueprint(BaseTestCase):
         db.session.add(user)
         db.session.commit()
         with self.client:
-            response = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            response = register_user(self, 'joe@gmail.com', '123456')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'fail')
             self.assertTrue(
@@ -57,14 +65,7 @@ class TestAuthBlueprint(BaseTestCase):
         """ Test for login of registered-user login """
         with self.client:
             # user registration
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json',
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(
@@ -74,14 +75,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(resp_register.content_type == 'application/json')
             self.assertEqual(resp_register.status_code, 201)
             # registered user login
-            response = self.client.post(
-                '/auth/login',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            response = login_user(self, 'joe@gmail.com', '123456')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'success')
             self.assertTrue(data['message'] == 'Successfully logged in.')
@@ -92,14 +86,7 @@ class TestAuthBlueprint(BaseTestCase):
     def test_non_registered_user_login(self):
         """ Test for login of non-registered user """
         with self.client:
-            response = self.client.post(
-                '/auth/login',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            response = login_user(self, 'joe@gmail.com', '123456')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'fail')
             self.assertTrue(data['message'] == 'User does not exist.')
@@ -109,14 +96,7 @@ class TestAuthBlueprint(BaseTestCase):
     def test_user_status(self):
         """ Test for user status """
         with self.client:
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             response = self.client.get(
                 '/auth/status',
                 headers=dict(
@@ -136,14 +116,7 @@ class TestAuthBlueprint(BaseTestCase):
         """ Test for logout before token expires """
         with self.client:
             # user registration
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json',
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(
@@ -152,14 +125,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(resp_register.content_type == 'application/json')
             self.assertEqual(resp_register.status_code, 201)
             # user login
-            resp_login = self.client.post(
-                '/auth/login',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            resp_login = login_user(self, 'joe@gmail.com', '123456')
             data_login = json.loads(resp_login.data.decode())
             self.assertTrue(data_login['status'] == 'success')
             self.assertTrue(data_login['message'] == 'Successfully logged in.')
@@ -184,14 +150,7 @@ class TestAuthBlueprint(BaseTestCase):
         """ Testing logout after the token expires """
         with self.client:
             # user registration
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json',
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(
@@ -200,14 +159,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(resp_register.content_type == 'application/json')
             self.assertEqual(resp_register.status_code, 201)
             # user login
-            resp_login = self.client.post(
-                '/auth/login',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            resp_login = login_user(self, 'joe@gmail.com', '123456')
             data_login = json.loads(resp_login.data.decode())
             self.assertTrue(data_login['status'] == 'success')
             self.assertTrue(data_login['message'] == 'Successfully logged in.')
@@ -230,18 +182,12 @@ class TestAuthBlueprint(BaseTestCase):
                 data['message'] == 'Signature expired. Please log in again.')
             self.assertEqual(response.status_code, 401)
 
+
     def test_valid_blacklisted_token_logout(self):
         """ Test for logout after a valid token gets blacklisted """
         with self.client:
             # user registration
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json',
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             data_register = json.loads(resp_register.data.decode())
             self.assertTrue(data_register['status'] == 'success')
             self.assertTrue(
@@ -250,14 +196,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(resp_register.content_type == 'application/json')
             self.assertEqual(resp_register.status_code, 201)
             # user login
-            resp_login = self.client.post(
-                '/auth/login',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            resp_login = login_user(self, 'joe@gmail.com', '123456')
             data_login = json.loads(resp_login.data.decode())
             self.assertTrue(data_login['status'] == 'success')
             self.assertTrue(data_login['message'] == 'Successfully logged in.')
@@ -269,7 +208,7 @@ class TestAuthBlueprint(BaseTestCase):
                 token=json.loads(resp_login.data.decode())['auth_token'])
             db.session.add(blacklist_token)
             db.session.commit()
-            # valid token logout
+            # blacklisted valid token logout
             response = self.client.post(
                 '/auth/logout',
                 headers=dict(
@@ -286,14 +225,7 @@ class TestAuthBlueprint(BaseTestCase):
     def test_valid_blacklisted_token_user(self):
         """ Test for user status with a blacklisted valid token """
         with self.client:
-            resp_register = self.client.post(
-                '/auth/register',
-                data=json.dumps(dict(
-                    email='joe@gmail.com',
-                    password='123456'
-                )),
-                content_type='application/json'
-            )
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
             # blacklist a valid token
             blacklist_token = BlacklistToken(
                 token=json.loads(resp_register.data.decode())['auth_token'])

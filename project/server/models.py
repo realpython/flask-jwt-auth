@@ -78,19 +78,14 @@ class BlacklistToken(db.Model):
         self.token = token
         self.blacklisted_on = datetime.datetime.now()
 
+    def __repr__(self):
+        return '<id: token: {}'.format(self.token)
+
     @staticmethod
     def check_blacklist(auth_token):
-        """
-        Verifies whether auth token is valid or not
-        :param auth_token:
-        :return: boolean
-        """
         # check whether auth token has been blacklisted
         res = BlacklistToken.query.filter_by(token=auth_token).first()
         if res:
             return True
         else:
             return False
-
-    def __repr__(self):
-        return '<id: token: {}'.format(self.token)

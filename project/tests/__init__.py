@@ -1,1 +1,1 @@
-# project/server/tests/__init__.py
+# project/tests/__init__.py
