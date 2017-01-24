@@ -1,13 +1,27 @@
 language: python
 
 python:
+  - "3.6"
   - "3.5"
   - "3.4"
   - "2.7"
 
+service:
+  - postgresql
+
+before_install:
+  - export APP_SETTINGS="project.server.config.TestingConfig"
+  - export SECRET_KEY="justatest"
+
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+
+before_script:
+  - psql -c 'create database flask_jwt_auth_test;' -U postgres
+  - python manage.py db init
+  - python manage.py db migrate
+  - python manage.py db upgrade
 
 script:
   - python manage.py cov
