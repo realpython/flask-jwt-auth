@@ -2,10 +2,15 @@
 
 [![Build Status](https://travis-ci.org/realpython/flask-jwt-auth.svg?branch=master)](https://travis-ci.org/realpython/flask-jwt-auth)
 
-## Quick Start
+## Want to learn how to build this project?
+
+Check out the [blog post](https://realpython.com/blog/python/token-based-authentication-with-flask/).
+
+## Want to use this project?
 
 ### Basics
 
+1. Fork/Clone
 1. Activate a virtualenv
 1. Install the requirements
 
