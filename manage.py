@@ -19,7 +19,7 @@ COV = coverage.coverage(
 )
 COV.start()
 
-from project.server import app, db
+from project.server import app, db, models
 
 migrate = Migrate(app, db)
 manager = Manager(app)
