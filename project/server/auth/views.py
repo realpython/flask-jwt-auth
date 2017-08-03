@@ -169,7 +169,7 @@ class LogoutAPI(MethodView):
                 'status': 'fail',
                 'message': 'Provide a valid auth token.'
             }
-            return make_response(jsonify(responseObject)), 403
+            return make_response(jsonify(responseObject)), 401
 
 # define the API resources
 registration_view = RegisterAPI.as_view('register_api')
