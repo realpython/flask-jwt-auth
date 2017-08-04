@@ -112,6 +112,23 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(data['data']['admin'] is 'true' or 'false')
             self.assertEqual(response.status_code, 200)
 
+    def test_user_status_malformed_bearer_token(self):
+        """ Test for user status with malformed bearer token"""
+        with self.client:
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
+            response = self.client.get(
+                '/auth/status',
+                headers=dict(
+                    Authorization='Bearer' + json.loads(
+                        resp_register.data.decode()
+                    )['auth_token']
+                )
+            )
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'fail')
+            self.assertTrue(data['message'] == 'Bearer token malformed.')
+            self.assertEqual(response.status_code, 401)
+
     def test_valid_logout(self):
         """ Test for logout before token expires """
         with self.client:
@@ -181,7 +198,6 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(
                 data['message'] == 'Signature expired. Please log in again.')
             self.assertEqual(response.status_code, 401)
-
 
     def test_valid_blacklisted_token_logout(self):
         """ Test for logout after a valid token gets blacklisted """
