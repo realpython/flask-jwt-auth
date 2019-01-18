@@ -1,6 +1,6 @@
 # Flask JWT Auth
 
-[![Build Status](https://travis-ci.org/realpython/flask-jwt-auth.svg?branch=master)](https://travis-ci.org/realpython/flask-jwt-auth)
+[![Build Status](https://travis-ci.org/ginghamconsulting/flask-jwt-auth.svg?branch=master)](https://travis-ci.org/ginghamconsulting/flask-jwt-auth.svg?branch=master)
 
 ## Want to learn how to build this project?
 
@@ -80,3 +80,7 @@ With coverage:
 ```sh
 $ python manage.py cov
 ```
+
+---
+start postgres on mac `  pg_ctl -D /usr/local/var/postgres start
+`
