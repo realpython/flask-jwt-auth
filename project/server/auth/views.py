@@ -99,6 +99,13 @@ class UserAPI(MethodView):
         if auth_header:
             try:
                 auth_token = auth_header.split(" ")[1]
+                if BlacklistToken.check_blacklist(auth_token):
+                    responseObject = {
+                    'status': 'fail',
+                    'message': 'User Logged Out Already. Please Login Again.'
+                }
+                    return make_response(jsonify(responseObject)), 401
+
             except IndexError:
                 responseObject = {
                     'status': 'fail',
