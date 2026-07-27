@@ -2,9 +2,17 @@
 
 [![Build Status](https://travis-ci.org/realpython/flask-jwt-auth.svg?branch=master)](https://travis-ci.org/realpython/flask-jwt-auth)
 
-## Want to learn how to build this project?
-
-Check out the [blog post](https://realpython.com/blog/python/token-based-authentication-with-flask/).
+> ## ⚠️ This project is no longer maintained
+>
+> It accompanied the tutorial *Token-Based Authentication With Flask*, which has
+> since been retired from Real Python. The code targets a 2017 dependency stack
+> (including PyJWT 1.4.2) and is kept here for reference only. Please don't use
+> it as the starting point for a new project or as a model for production
+> authentication code.
+>
+> For current Flask material, see the
+> [Flask by Example](https://realpython.com/learning-paths/flask-by-example/)
+> learning path.
 
 ## Want to use this project?
 

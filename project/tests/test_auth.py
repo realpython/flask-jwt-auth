@@ -260,6 +260,49 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(data['message'] == 'Token blacklisted. Please log in again.')
             self.assertEqual(response.status_code, 401)
 
+    def test_padded_signature_of_blacklisted_token(self):
+        """ Test that a padded spelling of a logged out token is rejected """
+        with self.client:
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
+            auth_token = json.loads(resp_register.data.decode())['auth_token']
+            # log the token out
+            resp_logout = self.client.post(
+                '/auth/logout',
+                headers=dict(Authorization='Bearer ' + auth_token)
+            )
+            self.assertEqual(resp_logout.status_code, 200)
+            # re-spell the same signature with Base64 padding
+            header, payload, signature = auth_token.split('.')
+            padded_signature = signature + '=' * (-len(signature) % 4)
+            self.assertNotEqual(padded_signature, signature)
+            response = self.client.get(
+                '/auth/status',
+                headers=dict(Authorization='Bearer ' + '.'.join(
+                    (header, payload, padded_signature)
+                ))
+            )
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'fail')
+            self.assertTrue(data['message'] == 'Invalid token. Please log in again.')
+            self.assertEqual(response.status_code, 401)
+
+    def test_malformed_signature(self):
+        """ Test that a token with an undecodable signature is rejected """
+        with self.client:
+            resp_register = register_user(self, 'joe@gmail.com', '123456')
+            auth_token = json.loads(resp_register.data.decode())['auth_token']
+            header, payload, signature = auth_token.split('.')
+            response = self.client.get(
+                '/auth/status',
+                headers=dict(Authorization='Bearer ' + '.'.join(
+                    (header, payload, signature + '!')
+                ))
+            )
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'fail')
+            self.assertTrue(data['message'] == 'Invalid token. Please log in again.')
+            self.assertEqual(response.status_code, 401)
+
 
 if __name__ == '__main__':
     unittest.main()
