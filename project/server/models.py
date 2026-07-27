@@ -52,6 +52,21 @@ class User(db.Model):
         :return: integer|string
         """
         try:
+            if isinstance(auth_token, bytes):
+                auth_token = auth_token.decode()
+            # The same signature can be spelled more than one way (for example
+            # with Base64 padding) and still verify. The blacklist below matches
+            # on the exact token text, so an alternate spelling of a logged out
+            # token would slip past it. Only accept the canonical spelling.
+            parts = auth_token.split('.')
+            if len(parts) != 3:
+                raise jwt.InvalidTokenError()
+            try:
+                signature = jwt.utils.base64url_decode(parts[2].encode())
+            except (TypeError, ValueError):
+                raise jwt.InvalidTokenError()
+            if parts[2] != jwt.utils.base64url_encode(signature).decode():
+                raise jwt.InvalidTokenError()
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
