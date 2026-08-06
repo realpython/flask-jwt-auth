@@ -4,6 +4,7 @@ venv
 temp
 tmp
 __pycache__
+.hypothesis
 
 *.pyc
 *.sqlite

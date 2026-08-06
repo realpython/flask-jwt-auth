@@ -4,7 +4,7 @@
 from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
-from project.server import bcrypt, db
+from project.server import bcrypt, db, py_version
 from project.server.models import User, BlacklistToken
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -18,81 +18,113 @@ class RegisterAPI(MethodView):
     def post(self):
         # get the post data
         post_data = request.get_json()
-        # check if user already exists
-        user = User.query.filter_by(email=post_data.get('email')).first()
-        if not user:
-            try:
-                user = User(
-                    email=post_data.get('email'),
-                    password=post_data.get('password')
-                )
-                # insert the user
-                db.session.add(user)
-                db.session.commit()
-                # generate the auth token
-                auth_token = user.encode_auth_token(user.id)
-                responseObject = {
-                    'status': 'success',
-                    'message': 'Successfully registered.',
-                    'auth_token': auth_token.decode()
-                }
-                return make_response(jsonify(responseObject)), 201
-            except Exception as e:
-                responseObject = {
-                    'status': 'fail',
-                    'message': 'Some error occurred. Please try again.'
-                }
-                return make_response(jsonify(responseObject)), 401
-        else:
-            responseObject = {
-                'status': 'fail',
-                'message': 'User already exists. Please Log in.',
-            }
-            return make_response(jsonify(responseObject)), 202
+        # validate post data
+        if py_version == 3:
+            if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+                is_str = True
+        elif py_version == 2:
+            if isinstance(post_data['email'], unicode) and isinstance(post_data['password'], unicode):
+                is_str = True
+        if is_str:
+            if '@' in post_data['email'] and '.' in post_data['email'] and len(post_data['email']) >= 4 and len(
+                    post_data['password']) >= 6:
+                # check if user already exists
+                user = User.query.filter_by(email=post_data.get('email')).first()
+                if not user:
+                    try:
+                        user = User(
+                            email=post_data.get('email'),
+                            password=post_data.get('password')
+                        )
+                        # insert the user
+                        db.session.add(user)
+                        db.session.commit()
+                        # generate the auth token
+                        auth_token = user.encode_auth_token(user.id)
+                        responseObject = {
+                            'status': 'success',
+                            'message': 'Successfully registered.',
+                            'auth_token': auth_token.decode()
+                        }
+                        return make_response(jsonify(responseObject)), 201
+                    except Exception as e:
+                        responseObject = {
+                            'status': 'fail',
+                            'message': 'Some error occurred. Please try again.'
+                        }
+                        return make_response(jsonify(responseObject)), 401
+                else:
+                    responseObject = {
+                        'status': 'fail',
+                        'message': 'User already exists. Please Log in.',
+                    }
+                    return make_response(jsonify(responseObject)), 202
+        responseObject = {
+            'status': 'fail',
+            'message': 'Email or Password format is not correct.',
+        }
+        return make_response(jsonify(responseObject)), 202
 
 
 class LoginAPI(MethodView):
     """
     User Login Resource
     """
+
     def post(self):
         # get the post data
         post_data = request.get_json()
-        try:
-            # fetch the user data
-            user = User.query.filter_by(
-                email=post_data.get('email')
-            ).first()
-            if user and bcrypt.check_password_hash(
-                user.password, post_data.get('password')
-            ):
-                auth_token = user.encode_auth_token(user.id)
-                if auth_token:
+        # validate post data
+        if py_version == 3:
+            if isinstance(post_data['email'], str) and isinstance(post_data['password'], str):
+                is_str = True
+        elif py_version == 2:
+            if isinstance(post_data['email'], unicode) and isinstance(post_data['password'], unicode):
+                is_str = True
+        if is_str:
+            if '@' in post_data['email'] and '.' in post_data['email'] and len(post_data['email']) >= 4 and len(
+                    post_data['password']) >= 6:
+                try:
+                    # fetch the user data
+                    user = User.query.filter_by(
+                        email=post_data.get('email')
+                    ).first()
+                    if user and bcrypt.check_password_hash(
+                            user.password, post_data.get('password')
+                    ):
+                        auth_token = user.encode_auth_token(user.id)
+                        if auth_token:
+                            responseObject = {
+                                'status': 'success',
+                                'message': 'Successfully logged in.',
+                                'auth_token': auth_token.decode()
+                            }
+                            return make_response(jsonify(responseObject)), 200
+                    else:
+                        responseObject = {
+                            'status': 'fail',
+                            'message': 'User does not exist.'
+                        }
+                        return make_response(jsonify(responseObject)), 404
+                except Exception as e:
+                    print(e)
                     responseObject = {
-                        'status': 'success',
-                        'message': 'Successfully logged in.',
-                        'auth_token': auth_token.decode()
+                        'status': 'fail',
+                        'message': 'Email or Password format is not correct.'
                     }
-                    return make_response(jsonify(responseObject)), 200
-            else:
-                responseObject = {
-                    'status': 'fail',
-                    'message': 'User does not exist.'
-                }
-                return make_response(jsonify(responseObject)), 404
-        except Exception as e:
-            print(e)
-            responseObject = {
-                'status': 'fail',
-                'message': 'Try again'
-            }
-            return make_response(jsonify(responseObject)), 500
+                    return make_response(jsonify(responseObject)), 202
+        responseObject = {
+            'status': 'fail',
+            'message': 'Email or Password format is not correct.',
+        }
+        return make_response(jsonify(responseObject)), 202
 
 
 class UserAPI(MethodView):
     """
     User Resource
     """
+
     def get(self):
         # get the auth token
         auth_header = request.headers.get('Authorization')
@@ -138,6 +170,7 @@ class LogoutAPI(MethodView):
     """
     Logout Resource
     """
+
     def post(self):
         # get auth token
         auth_header = request.headers.get('Authorization')
@@ -177,6 +210,7 @@ class LogoutAPI(MethodView):
                 'message': 'Provide a valid auth token.'
             }
             return make_response(jsonify(responseObject)), 403
+
 
 # define the API resources
 registration_view = RegisterAPI.as_view('register_api')
